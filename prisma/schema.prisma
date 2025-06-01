@@ -1,0 +1,97 @@
+model Users {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  name      String
+  password  String
+  role      Role     @default(user)
+  createdAt DateTime @default(now())
+
+  metaData             MetaDataUsers?
+  topics               Topics[]
+  balance              Balance?
+  transactionHistories TransactionHistory[]
+}
+
+model MetaDataUsers {
+  userId       String    @id
+  topicsId     String?   @unique
+  facebookId   String?   @unique
+  currentTopic String
+  profile      String
+  level        Int       @default(150)
+  typeLevel    TypeLevel @default(toeic)
+
+  user  Users   @relation(fields: [userId], references: [id])
+  topic Topics? @relation(fields: [topicsId], references: [id])
+}
+
+model Topics {
+  id             String   @id @default(uuid())
+  name           String
+  description    String?
+  userId         String?
+  metaDataUserId String
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @default(now()) @updatedAt
+
+  vocabularies Vocabularies[]
+  user         Users?         @relation(fields: [userId], references: [id])
+  metaDataUser MetaDataUsers?
+}
+
+model Vocabularies {
+  id             String   @id @default(uuid())
+  topicId        String
+  context        String
+  meaning        String
+  phonetic       String
+  example        String
+  meaningExample String
+  studyCount     Int      @default(0)
+  createdAt      DateTime @default(now())
+  learnedAt      DateTime @default(now()) @updatedAt
+
+  topic Topics @relation(fields: [topicId], references: [id])
+}
+
+model Balance {
+  userId     String @id
+  balance    Int    @default(0)
+  creditChat Int    @default(0)
+
+  user Users @relation(fields: [userId], references: [id])
+}
+
+model TransactionHistory {
+  id          String   @id @default(uuid())
+  userId      String
+  amount      Float
+  currency    String   @default("VND")
+  description String?
+  createdAt   DateTime @default(now())
+
+  user Users @relation(fields: [userId], references: [id])
+}
+
+// enum
+
+enum Role {
+  user
+  admin
+}
+
+enum TypeLevel {
+  toeic
+  ielts
+}
+
+// config
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
