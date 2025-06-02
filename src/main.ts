@@ -68,7 +68,8 @@ async function bootstrap() {
   });
 
   // Start the application
-  const port = CONFIG.port;
+  const port = Number(process.env.PORT) || CONFIG.port || 3000;
+  console.log(`App is listening on port: ${port}`);
   await app.listen(port, '0.0.0.0');
   console.log(`Application is running on: ${await app.getUrl()}`);
 }

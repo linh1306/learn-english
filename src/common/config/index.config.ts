@@ -2,7 +2,7 @@ import * as dotenv from 'dotenv';
 dotenv.config();
 
 const CONFIG = {
-  port: process.env.PORT || 5000,
+  port: process.env.PORT || 10000,
   environment: process.env.NODE_ENV || 'development',
   corsOrigin: process.env.CORS_ORIGIN || '*',
   throttler: {
